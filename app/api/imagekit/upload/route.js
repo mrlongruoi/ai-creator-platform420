@@ -33,7 +33,7 @@ export async function POST(request) {
     // Generate unique filename
     const timestamp = Date.now();
     const sanitizedFileName =
-      fileName?.replace(/[^a-zA-Z0-9.-]/g, "_") || "upload";
+      fileName?.replaceAll(/[^a-zA-Z0-9.-]/g, "_") || "upload";
     const uniqueFileName = `${userId}/${timestamp}_${sanitizedFileName}`;
 
     // Upload to ImageKit - Simple server-side upload

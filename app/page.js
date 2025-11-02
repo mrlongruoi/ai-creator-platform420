@@ -29,18 +29,15 @@ const Home = () => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener("mousemove", handleMouseMove);
+    globalThis.addEventListener("mousemove", handleMouseMove);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
+      globalThis.removeEventListener("mousemove", handleMouseMove);
     };
   }, []);
 
   // Data arrays
-  const navigationItems = [
-    { label: "Features", href: "#features" },
-    { label: "About", href: "#about" },
-  ];
+  // (removed unused navigationItems)
 
   return (
     <div className="min-h-screen bg-black text-white overflow-hidden relative">
@@ -111,11 +108,11 @@ const Home = () => {
                     "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&h=200&fit=crop",
                     "https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=200&h=200&fit=crop",
                     "https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=200&h=200&fit=crop",
-                  ].map((src, i) => (
-                    <div key={i} className="relative w-6 h-6 sm:w-8 sm:h-8">
+                  ].map((src) => (
+                    <div key={src} className="relative w-6 h-6 sm:w-8 sm:h-8">
                       <Image
                         src={src}
-                        alt={`Creator ${i + 1}`}
+                        alt="Creator avatar"
                         fill
                         className="rounded-full border-2 border-black object-cover"
                         sizes="32px"
@@ -126,12 +123,9 @@ const Home = () => {
                 <span>10k+ creators</span>
               </div>
               <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400"
-                  />
-                ))}
+                  {["s1", "s2", "s3", "s4", "s5"].map((k) => (
+                    <Star key={k} className="w-3 h-3 sm:w-4 sm:h-4 fill-yellow-400 text-yellow-400" />
+                  ))}
                 <span className="ml-1">4.9/5</span>
               </div>
             </div>
@@ -168,9 +162,9 @@ const Home = () => {
           </div>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            {features.map((feature, index) => (
+            {features.map((feature) => (
               <Card
-                key={index}
+                key={feature.title}
                 className="group transition-all duration-300 hover:scale-105 card-glass"
               >
                 <CardContent className="p-6 sm:p-8">
@@ -210,7 +204,7 @@ const Home = () => {
               <div className="space-y-4">
                 {platformTabs.map((tab, index) => (
                   <Button
-                    key={index}
+                    key={tab.title}
                     variant={activeTab === index ? "outline" : "ghost"}
                     onClick={() => setActiveTab(index)}
                     className="w-full justify-start h-auto p-6 "
@@ -246,8 +240,8 @@ const Home = () => {
                 </CardHeader>
                 <CardContent>
                   <div className="grid sm:grid-cols-2 gap-4">
-                    {platformTabs[activeTab].features.map((feature, index) => (
-                      <div key={index} className="flex items-center gap-3">
+                    {platformTabs[activeTab].features.map((feature) => (
+                      <div key={feature} className="flex items-center gap-3">
                         <CheckCircle className="w-5 h-5 text-green-400 flex-shrink-0" />
                         <span className="text-gray-300">{feature}</span>
                       </div>
@@ -270,8 +264,8 @@ const Home = () => {
           </h2>
 
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-6 lg:gap-8">
-            {socialProofStats.map((stat, index) => (
-              <div key={index} className="text-center">
+            {socialProofStats.map((stat) => (
+              <div key={stat.label} className="text-center">
                 <div className="w-12 h-12 sm:w-14 sm:h-14 lg:w-16 lg:h-16 bg-gradient-to-br from-purple-500 to-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4">
                   <stat.icon className="w-6 h-6 sm:w-7 sm:h-7 lg:w-8 lg:h-8 text-white" />
                 </div>
@@ -300,18 +294,15 @@ const Home = () => {
           </div>
 
           <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial) => (
               <Card
-                key={index}
+                key={testimonial.name}
                 className="transition-all duration-300 hover:shadow-lg card-glass"
               >
                 <CardContent className="p-8">
                   <div className="flex items-center gap-1 mb-4">
-                    {[...Array(testimonial.rating)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className="w-4 h-4 fill-yellow-400 text-yellow-400"
-                      />
+                    {Array.from({ length: testimonial.rating }).map((_, i) => (
+                      <Star key={`${testimonial.name}-star-${i}`} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                     ))}
                   </div>
                   <p className="mb-6 leading-relaxed text-gray-300">

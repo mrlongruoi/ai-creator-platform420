@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
@@ -143,3 +144,21 @@ export default function PostEditorHeader({
     </header>
   );
 }
+
+PostEditorHeader.propTypes = {
+  mode: PropTypes.oneOf(["create", "edit"]).isRequired,
+  initialData: PropTypes.shape({
+    status: PropTypes.oneOf(["draft", "published"]).isRequired,
+  }).isRequired,
+  isPublishing: PropTypes.bool,
+  onSave: PropTypes.func, // optional in edit mode
+  onPublish: PropTypes.func.isRequired,
+  onSchedule: PropTypes.func.isRequired,
+  onSettingsOpen: PropTypes.func.isRequired,
+  onBack: PropTypes.func.isRequired,
+};
+
+PostEditorHeader.defaultProps = {
+  isPublishing: false,
+  onSave: () => {},
+};

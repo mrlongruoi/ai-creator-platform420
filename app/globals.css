@@ -1,3 +1,4 @@
+/* stylelint-disable at-rule-no-unknown */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -56,7 +57,8 @@
   --secondary: oklch(0.97 0 0);
   --secondary-foreground: oklch(0.205 0 0);
   --muted: oklch(0.97 0 0);
-  --muted-foreground: oklch(0.556 0 0);
+  /* Darken muted-foreground to improve contrast on light muted backgrounds */
+  --muted-foreground: oklch(0.42 0 0);
   --accent: oklch(0.97 0 0);
   --accent-foreground: oklch(0.205 0 0);
   --destructive: oklch(0.577 0.245 27.325);
@@ -134,7 +136,111 @@ html {
   @apply bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent;
 }
 
+/* High-contrast and forced-colors fallbacks for gradient text */
+@media (prefers-contrast: more) {
+  .gradient-text-primary,
+  .gradient-text-accent {
+    background: none !important;
+    -webkit-background-clip: initial;
+    background-clip: border-box;
+    color: var(--foreground) !important;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
+@media (forced-colors: active) {
+  .gradient-text-primary,
+  .gradient-text-accent {
+    background: none !important;
+    -webkit-background-clip: initial;
+    background-clip: border-box;
+    color: CanvasText !important;
+    -webkit-text-fill-color: currentColor;
+  }
+}
+
 /* Glass Card Effect - Complex background/border combination used frequently */
 .card-glass {
   @apply bg-gray-900/50 border-gray-800 hover:border-purple-500/50;
+}
+
+/* Prose styles originally in post page (moved from styled-jsx) */
+.prose-invert h1 {
+  color: white;
+  font-weight: 700;
+  font-size: 2.5rem;
+  margin: 1.5rem 0;
+}
+.prose-invert h2 {
+  color: white;
+  font-weight: 600;
+  font-size: 2rem;
+  margin: 1.25rem 0;
+}
+.prose-invert h3 {
+  color: white;
+  font-weight: 600;
+  font-size: 1.5rem;
+  margin: 1rem 0;
+}
+.prose-invert p {
+  color: rgb(203, 213, 225);
+  line-height: 1.7;
+  margin: 1rem 0;
+}
+.prose-invert blockquote {
+  border-left: 4px solid rgb(147, 51, 234);
+  color: rgb(203, 213, 225);
+  padding-left: 1rem;
+  margin: 1.5rem 0;
+  font-style: italic;
+}
+.prose-invert a {
+  color: rgb(147, 51, 234);
+}
+.prose-invert a:hover {
+  color: rgb(168, 85, 247);
+}
+.prose-invert code {
+  background: rgb(51, 65, 85);
+  /* Increase contrast for inline code on dark background */
+  color: oklch(0.9 0.08 25);
+  padding: 0.125rem 0.25rem;
+  border-radius: 0.25rem;
+}
+.prose-invert pre {
+  background: rgb(30, 41, 59);
+  color: white;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid rgb(71, 85, 105);
+  overflow-x: auto;
+}
+
+/* Prefer stronger contrast for inline code when requested */
+@media (prefers-contrast: more) {
+  .prose-invert code {
+    color: var(--primary-foreground);
+    background: var(--primary);
+  }
+}
+
+/* stylelint-enable at-rule-no-unknown */
+.prose-invert ul,
+.prose-invert ol {
+  color: rgb(203, 213, 225);
+  padding-left: 1.5rem;
+}
+.prose-invert li {
+  margin: 0.25rem 0;
+}
+.prose-invert img {
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+}
+.prose-invert strong {
+  color: white;
+}
+.prose-invert em {
+  color: rgb(203, 213, 225);
 }

@@ -3,6 +3,7 @@ import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import PropTypes from "prop-types";
 
 const PublicHeader = ({ link, title }) => {
   return (
@@ -30,6 +31,11 @@ const PublicHeader = ({ link, title }) => {
       </div>
     </header>
   );
+};
+
+PublicHeader.propTypes = {
+  link: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
 };
 
 export default PublicHeader;

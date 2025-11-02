@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -105,18 +106,9 @@ export default function PostEditor({
 
       let resultId;
 
-      if (mode === "edit" && initialData?._id) {
-        // Always use update for edit mode
-        resultId = await updatePost({
-          id: initialData._id,
-          ...postData,
-        });
-      } else if (initialData?._id && action === "draft") {
-        // If we have existing draft data, update it
-        resultId = await updatePost({
-          id: initialData._id,
-          ...postData,
-        });
+      if (initialData?._id && (mode === "edit" || action === "draft")) {
+        // Update existing post when editing or saving a draft for an existing post
+        resultId = await updatePost({ id: initialData._id, ...postData });
       } else {
         // Create new post (will auto-update existing draft if needed)
         resultId = await createPost(postData);
@@ -194,3 +186,26 @@ export default function PostEditor({
     </div>
   );
 }
+
+PostEditor.propTypes = {
+  initialData: PropTypes.shape({
+    _id: PropTypes.string,
+    title: PropTypes.string,
+    content: PropTypes.string,
+    category: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string),
+    featuredImage: PropTypes.string,
+    scheduledFor: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+      PropTypes.instanceOf(Date),
+    ]),
+    status: PropTypes.oneOf(["draft", "published"]),
+  }),
+  mode: PropTypes.oneOf(["create", "edit"]),
+};
+
+PostEditor.defaultProps = {
+  initialData: null,
+  mode: "create",
+};

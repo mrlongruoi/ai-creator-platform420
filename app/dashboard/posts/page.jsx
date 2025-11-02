@@ -27,7 +27,9 @@ export default function PostsPage() {
 
   // Data fetching
   const { data: posts, isLoading } = useConvexQuery(api.posts.getUserPosts);
-  const deletePost = useConvexMutation(api.posts.deletePost);
+  const { mutate: deletePost } = useConvexMutation(
+    api.posts.deletePost
+  );
 
   // Filter and sort posts
   const filteredPosts = React.useMemo(() => {
@@ -35,7 +37,7 @@ export default function PostsPage() {
 
     let filtered = posts.filter((post) => {
       // Search filter
-      const matchesSearch = post.title
+      const matchesSearch = (post.title || "")
         .toLowerCase()
         .includes(searchQuery.toLowerCase());
 
@@ -73,20 +75,23 @@ export default function PostsPage() {
   };
 
   const handleDeletePost = async (post) => {
-    if (!window.confirm("Are you sure you want to delete this post?")) {
-      return;
-    }
+    const canDelete =
+      typeof globalThis !== "undefined" &&
+      typeof globalThis.confirm === "function" &&
+      globalThis.confirm("Are you sure you want to delete this post?");
+    if (!canDelete) return;
 
     try {
-      await deletePost.mutate({ id: post._id });
+      await deletePost({ id: post._id });
       toast.success("Post deleted successfully");
     } catch (error) {
-      toast.error("Failed to delete post");
+      console.error("Failed to delete post", error);
+      toast.error(error?.message || "Failed to delete post");
     }
   };
 
   const handleDuplicatePost = (post) => {
-    // TODO: Implement post duplication
+    // Duplication feature is planned; not implemented yet.
     toast.info("Duplication feature coming soon!");
   };
 

@@ -6,6 +6,7 @@ import Header from "@/components/header";
 import { ClerkProvider } from "@clerk/nextjs";
 import { shadesOfPurple } from "@clerk/themes";
 import { ConvexClientProvider } from "@/components/convex-client-provider";
+import PropTypes from "prop-types";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -16,7 +17,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en" suppressHydrationWarning data-scroll-behavior="smooth">
       <head>{/* <link rel="icon" href="/logo-text.png" sizes="any" /> */}</head>
       <body className={`${inter.className}`}>
         <ThemeProvider
@@ -30,13 +31,12 @@ export default function RootLayout({ children }) {
             appearance={{
               baseTheme: shadesOfPurple,
             }}
-            // Set safe defaults to replace deprecated redirectUrl usages
-            // If a returnBackUrl is present, Clerk will prefer that; otherwise these fallbacks apply
-            signInFallbackRedirectUrl="/feed"
-            signUpFallbackRedirectUrl="/feed"
-            // Also set afterSignIn/afterSignUp to keep the UI components consistent
-            afterSignInUrl="/feed"
-            afterSignUpUrl="/feed"
+            // Centralize auth routes and post-auth destinations
+            signInUrl="/sign-in"
+            signUpUrl="/sign-up"
+            // Note: afterSignInUrl/afterSignUpUrl are deprecated.
+            // We handle redirect destinations in the SignIn/SignUp components
+            // using fallbackRedirectUrl/forceRedirectUrl and environment variables.
           >
             <ConvexClientProvider>
               <Header />
@@ -52,3 +52,7 @@ export default function RootLayout({ children }) {
     </html>
   );
 }
+
+RootLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

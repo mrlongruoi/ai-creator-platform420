@@ -49,7 +49,8 @@ export default function FeedPage() {
   );
 
   // Mutations
-  const toggleFollow = useConvexMutation(api.follows.toggleFollow);
+  const { mutate: toggleFollow, isLoading: isTogglingFollow } =
+    useConvexMutation(api.follows.toggleFollow);
 
   // Handle follow/unfollow
   const handleFollowToggle = async (userId) => {
@@ -59,21 +60,18 @@ export default function FeedPage() {
     }
 
     try {
-      await toggleFollow.mutate({ followingId: userId });
+      await toggleFollow({ followingId: userId });
       toast.success("Follow status updated");
     } catch (error) {
-      toast.error(error.message || "Failed to update follow status");
+      console.error("toggleFollow failed", error);
+      toast.error(error?.message || "Failed to update follow status");
     }
   };
 
   // Get current posts based on active tab
   const getCurrentPosts = () => {
-    switch (activeTab) {
-      case "trending":
-        return trendingPosts || [];
-      default:
-        return feedData?.posts || [];
-    }
+    if (activeTab === "trending") return trendingPosts || [];
+    return feedData?.posts || [];
   };
 
   const isLoading =
@@ -148,14 +146,16 @@ export default function FeedPage() {
             )}
 
             {/* Posts Feed */}
-            {isLoading ? (
+            {isLoading && (
               <div className="flex justify-center py-12">
                 <div className="text-center">
                   <Loader2 className="h-8 w-8 animate-spin text-purple-400 mx-auto mb-4" />
                   <p className="text-slate-400">Loading posts...</p>
                 </div>
               </div>
-            ) : isError ? (
+            )}
+
+            {!isLoading && isError && (
               <Card className="card-glass">
                 <CardContent className="text-center py-12">
                   <div className="space-y-4">
@@ -173,7 +173,9 @@ export default function FeedPage() {
                   </div>
                 </CardContent>
               </Card>
-            ) : currentPosts.length === 0 ? (
+            )}
+
+            {!isLoading && !isError && currentPosts.length === 0 && (
               <Card className="card-glass">
                 <CardContent className="text-center py-12">
                   <div className="space-y-4">
@@ -193,7 +195,9 @@ export default function FeedPage() {
                   </div>
                 </CardContent>
               </Card>
-            ) : (
+            )}
+
+            {!isLoading && !isError && currentPosts.length > 0 && (
               <>
                 {/* Posts Grid */}
                 <div className="space-y-6">
@@ -229,23 +233,29 @@ export default function FeedPage() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {suggestionsLoading ? (
+                {suggestionsLoading && (
                   <div className="flex justify-center py-4">
                     <Loader2 className="h-5 w-5 animate-spin text-purple-400" />
                   </div>
-                ) : suggestionsError ? (
+                )}
+
+                {!suggestionsLoading && suggestionsError && (
                   <div className="text-center py-4">
                     <p className="text-slate-400 text-sm">
                       Failed to load suggestions
                     </p>
                   </div>
-                ) : !suggestedUsers || suggestedUsers.length === 0 ? (
+                )}
+
+                {!suggestionsLoading && !suggestionsError && (!suggestedUsers || suggestedUsers.length === 0) && (
                   <div className="text-center py-4">
                     <p className="text-slate-400 text-sm">
                       No suggestions available
                     </p>
                   </div>
-                ) : (
+                )}
+
+                {!suggestionsLoading && !suggestionsError && suggestedUsers && suggestedUsers.length > 0 && (
                   <div className="space-y-4">
                     {suggestedUsers.map((user) => (
                       <div key={user._id} className="space-y-2">
@@ -281,6 +291,7 @@ export default function FeedPage() {
                             onClick={() => handleFollowToggle(user._id)}
                             variant="outline"
                             size="sm"
+                            disabled={isTogglingFollow}
                             className="border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white"
                           >
                             <UserPlus className="h-3 w-3 mr-1" />

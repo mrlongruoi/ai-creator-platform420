@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import Image from "next/image";
+import PropTypes from "prop-types";
 
 const sidebarItems = [
   {
@@ -56,7 +57,9 @@ export default function DashboardLayout({ children }) {
     <div className="min-h-screen bg-slate-900 text-white">
       {/* Mobile Sidebar Overlay */}
       {isSidebarOpen && (
-        <div
+        <button
+          type="button"
+          aria-label="Close sidebar overlay"
           className="fixed inset-0 bg-black/50 z-40 lg:hidden"
           onClick={toggleSidebar}
         />
@@ -94,14 +97,14 @@ export default function DashboardLayout({ children }) {
 
         {/* Navigation */}
         <nav className="p-4 space-y-2">
-          {sidebarItems.map((item, index) => {
+          {sidebarItems.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== "/dashboard" && pathname.startsWith(item.href));
 
             return (
               <Link
-                key={index}
+                key={item.href}
                 href={item.href}
                 onClick={() => setIsSidebarOpen(false)}
               >
@@ -198,3 +201,7 @@ export default function DashboardLayout({ children }) {
     </div>
   );
 }
+
+DashboardLayout.propTypes = {
+  children: PropTypes.node.isRequired,
+};

@@ -10,7 +10,7 @@ export const toggleLike = mutation({
   handler: async (ctx, args) => {
     const post = await ctx.db.get(args.postId);
 
-    if (!post || post.status !== "published") {
+    if (post?.status !== "published") {
       throw new Error("Post not found or not published");
     }
 

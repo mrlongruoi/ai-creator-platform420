@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { notFound } from "next/navigation";
+import { notFound, useParams } from "next/navigation";
 import Image from "next/image";
 import { Calendar, UserPlus, UserCheck } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
@@ -13,8 +13,8 @@ import { toast } from "sonner";
 import PostCard from "@/components/post-card";
 import PublicHeader from "./_components/public-header";
 
-export default function ProfilePage({ params }) {
-  const { username } = React.use(params);
+export default function ProfilePage() {
+  const { username } = useParams();
   const { user: currentUser } = useUser();
 
   // Get user profile
@@ -46,7 +46,8 @@ export default function ProfilePage({ params }) {
   );
 
   // Follow mutation
-  const toggleFollow = useConvexMutation(api.follows.toggleFollow);
+  const { mutate: toggleFollow, isLoading: isTogglingFollow } =
+    useConvexMutation(api.follows.toggleFollow);
 
   if (userLoading || postsLoading) {
     return (
@@ -74,9 +75,10 @@ export default function ProfilePage({ params }) {
     }
 
     try {
-      await toggleFollow.mutate({ followingId: user._id });
+      await toggleFollow({ followingId: user._id });
     } catch (error) {
-      toast.error(error.message || "Failed to update follow status");
+      console.error("toggleFollow failed", error);
+      toast.error(error?.message || "Failed to update follow status");
     }
   };
 
@@ -114,7 +116,7 @@ export default function ProfilePage({ params }) {
           {!isOwnProfile && currentUser && (
             <Button
               onClick={handleFollowToggle}
-              disabled={toggleFollow.isLoading}
+              disabled={isTogglingFollow}
               variant={isFollowing ? "outline" : "primary"}
               className="mb-4"
             >
@@ -202,3 +204,5 @@ export default function ProfilePage({ params }) {
     </div>
   );
 }
+
+// No props; route params are read via useParams()

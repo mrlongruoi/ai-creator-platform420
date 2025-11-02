@@ -105,7 +105,7 @@ export const incrementViewCount = mutation({
   handler: async (ctx, args) => {
     const post = await ctx.db.get(args.postId);
 
-    if (!post || post.status !== "published") {
+    if (post?.status !== "published") {
       return;
     }
 

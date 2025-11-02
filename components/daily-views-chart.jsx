@@ -2,6 +2,7 @@
 
 import React from "react";
 import { Line } from "react-chartjs-2";
+import PropTypes from "prop-types";
 import {
   Chart as ChartJS,
   CategoryScale,
@@ -86,3 +87,18 @@ const DailyViewsChart = ({ data, isLoading }) => {
 };
 
 export default DailyViewsChart;
+
+DailyViewsChart.propTypes = {
+  data: PropTypes.arrayOf(
+    PropTypes.shape({
+      day: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      views: PropTypes.number.isRequired,
+    })
+  ),
+  isLoading: PropTypes.bool,
+};
+
+DailyViewsChart.defaultProps = {
+  data: [],
+  isLoading: false,
+};

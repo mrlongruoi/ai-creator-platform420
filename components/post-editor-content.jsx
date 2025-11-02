@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ImageIcon, Sparkles, Wand2, Plus, Minus } from "lucide-react";
@@ -11,7 +12,7 @@ import { BarLoader } from "react-spinners";
 
 const ReactQuill = dynamic(() => import("react-quill-new"), { ssr: false });
 
-if (typeof window !== "undefined") {
+if (typeof globalThis !== "undefined") {
   import("react-quill-new/dist/quill.snow.css");
 }
 
@@ -79,6 +80,7 @@ export default function PostEditorContent({
     },
   });
 
+  // eslint-disable-next-line sonarjs/cognitive-complexity
   const handleAI = async (type, improvementType = null) => {
     const { title, content, category, tags } = watchedValues;
 
@@ -88,7 +90,7 @@ export default function PostEditorContent({
       if (
         content &&
         content !== "<p><br></p>" &&
-        !window.confirm("This will replace your existing content. Continue?")
+        !globalThis.confirm("This will replace your existing content. Continue?")
       )
         return;
       setIsGenerating(true);
@@ -113,6 +115,7 @@ export default function PostEditorContent({
         toast.error(result.error);
       }
     } catch (error) {
+      console.error("AI content error:", error);
       toast.error(`Failed to ${type} content. Please try again.`);
     } finally {
       type === "generate" ? setIsGenerating(false) : setIsImproving(false);
@@ -184,18 +187,7 @@ export default function PostEditorContent({
 
           {/* AI Tools */}
           <div>
-            {!hasContent ? (
-              <Button
-                onClick={() => handleAI("generate")}
-                disabled={!hasTitle || isGenerating || isImproving}
-                variant="outline"
-                size="sm"
-                className="border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white disabled:opacity-50 w-full"
-              >
-                <Wand2 className="h-4 w-4 mr-2" />
-                Generate Content with AI
-              </Button>
-            ) : (
+            {hasContent ? (
               <div className="grid grid-cols-3 w-full gap-2">
                 {[
                   { type: "enhance", icon: Sparkles, color: "green" },
@@ -215,8 +207,19 @@ export default function PostEditorContent({
                   </Button>
                 ))}
               </div>
+            ) : (
+              <Button
+                onClick={() => handleAI("generate")}
+                disabled={!hasTitle || isGenerating || isImproving}
+                variant="outline"
+                size="sm"
+                className="border-purple-500 text-purple-400 hover:bg-purple-500 hover:text-white disabled:opacity-50 w-full"
+              >
+                <Wand2 className="h-4 w-4 mr-2" />
+                Generate Content with AI
+              </Button>
             )}
-            {!hasTitle && (
+            {hasTitle ? null : (
               <p className="text-xs text-slate-400 w-full pt-2">
                 Add a title to enable AI content generation
               </p>
@@ -250,6 +253,7 @@ export default function PostEditorContent({
         </div>
       </main>
 
+      {/* eslint-disable-next-line react/no-unknown-property */}
       <style jsx global>{`
         .ql-editor {
           color: white !important;
@@ -322,3 +326,19 @@ export default function PostEditorContent({
     </>
   );
 }
+
+PostEditorContent.propTypes = {
+  form: PropTypes.shape({
+    register: PropTypes.func.isRequired,
+    watch: PropTypes.func.isRequired,
+    setValue: PropTypes.func.isRequired,
+    formState: PropTypes.shape({
+      errors: PropTypes.object,
+    }).isRequired,
+  }).isRequired,
+  setQuillRef: PropTypes.oneOfType([
+    PropTypes.func,
+    PropTypes.shape({ current: PropTypes.any }),
+  ]).isRequired,
+  onImageUpload: PropTypes.func.isRequired,
+};

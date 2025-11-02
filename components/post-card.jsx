@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import PropTypes from "prop-types";
 import Link from "next/link";
 import Image from "next/image";
 import { formatDistanceToNow } from "date-fns";
@@ -81,13 +82,13 @@ const PostCard = ({
           {/* Featured Image */}
           <Link
             href={publicUrl || "#"}
-            className={!publicUrl ? "pointer-events-none" : ""}
+            className={publicUrl ? "" : "pointer-events-none"}
             target="_blank"
           >
             <div className="relative w-full h-48 rounded-lg overflow-hidden">
               <Image
                 src={post.featuredImage || "/placeholder.png"}
-                alt={post.title}
+                alt={post.title || "Post image"}
                 fill
                 className="object-cover hover:scale-105 transition-transform duration-300"
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -115,7 +116,7 @@ const PostCard = ({
 
               <Link
                 href={publicUrl || "#"}
-                className={!publicUrl ? "pointer-events-none" : ""}
+                className={publicUrl ? "" : "pointer-events-none"}
               >
                 <h3 className="text-xl font-bold text-white hover:text-purple-300 transition-colors line-clamp-2">
                   {post.title}
@@ -254,3 +255,44 @@ const PostCard = ({
 };
 
 export default PostCard;
+
+PostCard.propTypes = {
+  post: PropTypes.shape({
+    _id: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    featuredImage: PropTypes.string,
+    status: PropTypes.oneOf(["draft", "published"]).isRequired,
+    scheduledFor: PropTypes.number, // ms timestamp
+    author: PropTypes.shape({
+      name: PropTypes.string,
+      username: PropTypes.string,
+      imageUrl: PropTypes.string,
+    }),
+    username: PropTypes.string,
+    tags: PropTypes.arrayOf(PropTypes.string),
+    viewCount: PropTypes.number,
+    likeCount: PropTypes.number,
+    publishedAt: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+      PropTypes.instanceOf(Date),
+    ]),
+    updatedAt: PropTypes.oneOfType([
+      PropTypes.number,
+      PropTypes.string,
+      PropTypes.instanceOf(Date),
+    ]),
+  }).isRequired,
+  showActions: PropTypes.bool,
+  showAuthor: PropTypes.bool,
+  onEdit: PropTypes.func,
+  onDelete: PropTypes.func,
+  onDuplicate: PropTypes.func,
+  className: PropTypes.string,
+};
+
+PostCard.defaultProps = {
+  showActions: false,
+  showAuthor: true,
+  className: "",
+};

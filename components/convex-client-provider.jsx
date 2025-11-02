@@ -6,6 +6,7 @@ import { useAuth } from "@clerk/nextjs";
 import { ConvexProviderWithClerk } from "convex/react-clerk";
 
 import { useMemo } from "react";
+import PropTypes from "prop-types";
 
 export function ConvexClientProvider({ children }) {
   const convex = useMemo(() => {
@@ -28,3 +29,7 @@ export function ConvexClientProvider({ children }) {
     </ConvexProviderWithClerk>
   );
 }
+
+ConvexClientProvider.propTypes = {
+  children: PropTypes.node.isRequired,
+};

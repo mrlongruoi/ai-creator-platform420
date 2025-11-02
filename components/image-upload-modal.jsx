@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useCallback } from "react";
+import PropTypes from "prop-types";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -267,7 +268,7 @@ export default function ImageUploadModal({
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) handleClose(); }}>
       <DialogContent className="!max-w-6xl !h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="text-white">{title}</DialogTitle>
@@ -452,7 +453,7 @@ export default function ImageUploadModal({
                           onChange={(e) =>
                             setValue(
                               "customWidth",
-                              parseInt(e.target.value) || 800
+                              Number.parseInt(e.target.value) || 800
                             )
                           }
                           min="100"
@@ -467,7 +468,7 @@ export default function ImageUploadModal({
                           onChange={(e) =>
                             setValue(
                               "customHeight",
-                              parseInt(e.target.value) || 600
+                              Number.parseInt(e.target.value) || 600
                             )
                           }
                           min="100"
@@ -664,3 +665,14 @@ export default function ImageUploadModal({
     </Dialog>
   );
 }
+
+ImageUploadModal.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  onImageSelect: PropTypes.func.isRequired,
+  title: PropTypes.string,
+};
+
+ImageUploadModal.defaultProps = {
+  title: "Upload & Transform Image",
+};

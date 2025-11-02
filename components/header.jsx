@@ -93,13 +93,21 @@ export default function Header() {
           </Authenticated>
 
           <Unauthenticated>
-            <SignInButton fallbackRedirectUrl="/feed">
+            <SignInButton
+              fallbackRedirectUrl={
+                process.env.NEXT_PUBLIC_AFTER_AUTH_FALLBACK_REDIRECT_URL || "/feed"
+              }
+            >
               <Button variant="glass" className="" size="sm">
                 Sign In
               </Button>
             </SignInButton>
 
-            <SignUpButton fallbackRedirectUrl="/feed">
+            <SignUpButton
+              fallbackRedirectUrl={
+                process.env.NEXT_PUBLIC_AFTER_AUTH_FALLBACK_REDIRECT_URL || "/feed"
+              }
+            >
               <Button variant="primary" size="sm" className="whitespace-nowrap">
                 Get Started
               </Button>

@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
+import PropTypes from "prop-types";
 import {
   Dialog,
   DialogContent,
@@ -10,6 +11,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import {
   Select,
@@ -65,7 +67,7 @@ export default function PostEditorSettings({ isOpen, onClose, form, mode }) {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
+    <Dialog open={isOpen} onOpenChange={(open) => { if (!open) onClose(); }}>
       <DialogContent className="max-w-md">
         <DialogHeader>
           <DialogTitle className="text-white">Post Settings</DialogTitle>
@@ -75,12 +77,12 @@ export default function PostEditorSettings({ isOpen, onClose, form, mode }) {
         <div className="space-y-6">
           {/* Category */}
           <div className="space-y-2">
-            <label className="text-white text-sm font-medium">Category</label>
+            <Label className="text-white text-sm font-medium">Category</Label>
             <Select
               value={watchedValues.category}
               onValueChange={(value) => setValue("category", value)}
             >
-              <SelectTrigger className="bg-slate-800 border-slate-600">
+              <SelectTrigger className="bg-slate-800 border-slate-600" aria-labelledby="category-label">
                 <SelectValue placeholder="Select category..." />
               </SelectTrigger>
               <SelectContent>
@@ -95,9 +97,10 @@ export default function PostEditorSettings({ isOpen, onClose, form, mode }) {
 
           {/* Tags */}
           <div className="space-y-3">
-            <label className="text-white text-sm font-medium">Tags</label>
+            <Label htmlFor="tags-input" className="text-white text-sm font-medium">Tags</Label>
             <div className="flex space-x-2">
               <Input
+                id="tags-input"
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagInput}
@@ -117,9 +120,9 @@ export default function PostEditorSettings({ isOpen, onClose, form, mode }) {
 
             {watchedValues.tags.length > 0 && (
               <div className="flex flex-wrap gap-2">
-                {watchedValues.tags.map((tag, index) => (
+                {watchedValues.tags.map((tag) => (
                   <Badge
-                    key={index}
+                    key={tag}
                     variant="secondary"
                     className="bg-purple-500/20 text-purple-300 border-purple-500/30"
                   >
@@ -144,10 +147,11 @@ export default function PostEditorSettings({ isOpen, onClose, form, mode }) {
           {/* Scheduling */}
           {mode === "create" && (
             <div className="space-y-2">
-              <label className="text-white text-sm font-medium">
+              <Label htmlFor="scheduled-for" className="text-white text-sm font-medium">
                 Schedule Publication
-              </label>
+              </Label>
               <Input
+                id="scheduled-for"
                 value={watchedValues.scheduledFor}
                 onChange={(e) => setValue("scheduledFor", e.target.value)}
                 type="datetime-local"
@@ -164,3 +168,13 @@ export default function PostEditorSettings({ isOpen, onClose, form, mode }) {
     </Dialog>
   );
 }
+
+PostEditorSettings.propTypes = {
+  isOpen: PropTypes.bool.isRequired,
+  onClose: PropTypes.func.isRequired,
+  form: PropTypes.shape({
+    watch: PropTypes.func.isRequired,
+    setValue: PropTypes.func.isRequired,
+  }).isRequired,
+  mode: PropTypes.oneOf(["create", "edit"]).isRequired,
+};
