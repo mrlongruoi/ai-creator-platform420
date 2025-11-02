@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import PublicHeader from "../_components/public-header";
 import { useUser } from "@clerk/nextjs";
 import { useConvexMutation, useConvexQuery } from "@/hooks/use-convex-query";
@@ -70,12 +70,32 @@ const PostPage = () => {
     api.public.incrementViewCount
   );
 
-  // Track view when post loads
+  // Track view once per session when post loads (guards dev StrictMode double-invoke)
+  const viewedKey = useMemo(
+    () => (postId ? `viewed:${String(postId)}` : null),
+    [postId]
+  );
+
   useEffect(() => {
-    if (post && !postLoading) {
-      incrementView({ postId });
+    if (!postId || !post || postLoading) return;
+
+    try {
+      if (globalThis.window !== undefined && viewedKey) {
+        const already = sessionStorage.getItem(viewedKey);
+        if (already) return;
+        sessionStorage.setItem(viewedKey, "1");
+      }
+    } catch (e) {
+      // Non-fatal; proceed to count once and surface a dev-only warning for diagnostics
+      if (process.env.NODE_ENV !== "production") {
+        console.warn("sessionStorage not available to dedupe views:", e);
+      }
     }
-  }, [post, postLoading, incrementView, postId]);
+
+    incrementView({ postId });
+    // Only run when we transition into the loaded state for this postId
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [postId, postLoading, !!post]);
 
   if (postLoading) {
     return (
