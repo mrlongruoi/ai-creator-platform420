@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { ArrowRight, Loader2, User } from "lucide-react";
+import { ArrowRight, Loader2 } from "lucide-react";
 import { api } from "@/convex/_generated/api";
 import { useConvexQuery } from "@/hooks/use-convex-query";
 import PostEditor from "@/components/post-editor";

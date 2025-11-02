@@ -30,6 +30,13 @@ export default function RootLayout({ children }) {
             appearance={{
               baseTheme: shadesOfPurple,
             }}
+            // Set safe defaults to replace deprecated redirectUrl usages
+            // If a returnBackUrl is present, Clerk will prefer that; otherwise these fallbacks apply
+            signInFallbackRedirectUrl="/feed"
+            signUpFallbackRedirectUrl="/feed"
+            // Also set afterSignIn/afterSignUp to keep the UI components consistent
+            afterSignInUrl="/feed"
+            afterSignUpUrl="/feed"
           >
             <ConvexClientProvider>
               <Header />

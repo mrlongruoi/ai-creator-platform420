@@ -93,13 +93,13 @@ export default function Header() {
           </Authenticated>
 
           <Unauthenticated>
-            <SignInButton>
+            <SignInButton fallbackRedirectUrl="/feed">
               <Button variant="glass" className="" size="sm">
                 Sign In
               </Button>
             </SignInButton>
 
-            <SignUpButton>
+            <SignUpButton fallbackRedirectUrl="/feed">
               <Button variant="primary" size="sm" className="whitespace-nowrap">
                 Get Started
               </Button>
