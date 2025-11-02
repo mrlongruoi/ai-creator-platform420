@@ -24,15 +24,26 @@ export default function FeedPage() {
   });
 
   // Data queries
-  const { data: feedData, isLoading: feedLoading } = useConvexQuery(
+  const {
+    data: feedData,
+    isLoading: feedLoading,
+    error: feedError,
+  } = useConvexQuery(
     api.feed.getFeed,
     { limit: 15 }
   );
 
-  const { data: suggestedUsers, isLoading: suggestionsLoading } =
-    useConvexQuery(api.feed.getSuggestedUsers, { limit: 6 });
+  const {
+    data: suggestedUsers,
+    isLoading: suggestionsLoading,
+    error: suggestionsError,
+  } = useConvexQuery(api.feed.getSuggestedUsers, { limit: 6 });
 
-  const { data: trendingPosts, isLoading: trendingLoading } = useConvexQuery(
+  const {
+    data: trendingPosts,
+    isLoading: trendingLoading,
+    error: trendingError,
+  } = useConvexQuery(
     api.feed.getTrendingPosts,
     { limit: 15 }
   );
@@ -67,6 +78,9 @@ export default function FeedPage() {
 
   const isLoading =
     feedLoading || (activeTab === "trending" && trendingLoading);
+  const isError =
+    (!!feedError && activeTab !== "trending") ||
+    (activeTab === "trending" && !!trendingError);
   const currentPosts = getCurrentPosts();
 
   return (
@@ -141,6 +155,24 @@ export default function FeedPage() {
                   <p className="text-slate-400">Loading posts...</p>
                 </div>
               </div>
+            ) : isError ? (
+              <Card className="card-glass">
+                <CardContent className="text-center py-12">
+                  <div className="space-y-4">
+                    <div className="text-6xl">⚠️</div>
+                    <div>
+                      <h3 className="text-xl font-bold text-white mb-2">
+                        {activeTab === "trending"
+                          ? "Failed to load trending posts"
+                          : "Failed to load feed"}
+                      </h3>
+                      <p className="text-slate-400 mb-6">
+                        Please try again in a moment.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ) : currentPosts.length === 0 ? (
               <Card className="card-glass">
                 <CardContent className="text-center py-12">
@@ -200,6 +232,12 @@ export default function FeedPage() {
                 {suggestionsLoading ? (
                   <div className="flex justify-center py-4">
                     <Loader2 className="h-5 w-5 animate-spin text-purple-400" />
+                  </div>
+                ) : suggestionsError ? (
+                  <div className="text-center py-4">
+                    <p className="text-slate-400 text-sm">
+                      Failed to load suggestions
+                    </p>
                   </div>
                 ) : !suggestedUsers || suggestedUsers.length === 0 ? (
                   <div className="text-center py-4">
